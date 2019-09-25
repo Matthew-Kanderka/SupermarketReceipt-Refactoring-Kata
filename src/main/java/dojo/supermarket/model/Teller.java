@@ -24,12 +24,16 @@ public class Teller {
             Product p = pq.getProduct();
             double quantity = pq.getQuantity();
             double unitPrice = this.catalog.getUnitPrice(p);
-            double price = quantity * unitPrice;
-            receipt.addProduct(p, quantity, unitPrice, price);
+            ReceiptItem newReceiptItem = new ReceiptItem(p, quantity, unitPrice, getTotalPrice(quantity, unitPrice));
+            receipt.addProduct(newReceiptItem);
         }
         theCart.handleOffers(receipt, this.offers, this.catalog);
 
         return receipt;
+    }
+
+    public double getTotalPrice(Double quantity, Double unitPrice) {
+        return quantity * unitPrice;
     }
 
 }
