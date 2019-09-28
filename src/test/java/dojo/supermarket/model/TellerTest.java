@@ -1,5 +1,8 @@
 package dojo.supermarket.model;
 
+import dojo.supermarket.offers.NForAmountOffer;
+import dojo.supermarket.offers.TenPercentDiscountOffer;
+import dojo.supermarket.offers.ThreeForTwoOffer;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -41,10 +44,12 @@ public class TellerTest {
         SupermarketCatalog testCatalog = new FakeCatalog();
         Product apples = new Product("apples", ProductUnit.Kilo);
 
+        NForAmountOffer offer = new NForAmountOffer(SpecialOfferType.FiveForAmount, apples, 2.0);
+
         testCatalog.addProduct(apples, 1.50);
 
         Teller testClass = new Teller(testCatalog);
-        testClass.addSpecialOffer(SpecialOfferType.FiveForAmount, apples, 2.0);
+        testClass.addSpecialOffer(apples, offer);
 
         ShoppingCart shoppingCart = new ShoppingCart();
         shoppingCart.addItemQuantity(apples, 10.0);
@@ -64,10 +69,12 @@ public class TellerTest {
         SupermarketCatalog testCatalog = new FakeCatalog();
         Product apples = new Product("apples", ProductUnit.Kilo);
 
+        NForAmountOffer offer = new NForAmountOffer(SpecialOfferType.TwoForAmount, apples, 1.0);
+
         testCatalog.addProduct(apples, 1.50);
 
         Teller testClass = new Teller(testCatalog);
-        testClass.addSpecialOffer(SpecialOfferType.TwoForAmount, apples, 1.0);
+        testClass.addSpecialOffer(apples, offer);
 
         ShoppingCart shoppingCart = new ShoppingCart();
         shoppingCart.addItemQuantity(apples, 10.0);
@@ -87,10 +94,12 @@ public class TellerTest {
         SupermarketCatalog testCatalog = new FakeCatalog();
         Product apples = new Product("apples", ProductUnit.Kilo);
 
+        ThreeForTwoOffer offer = new ThreeForTwoOffer(SpecialOfferType.ThreeForTwo, apples, 2.0);
+
         testCatalog.addProduct(apples, 1.50);
 
         Teller testClass = new Teller(testCatalog);
-        testClass.addSpecialOffer(SpecialOfferType.ThreeForTwo, apples, 2.0);
+        testClass.addSpecialOffer(apples, offer);
 
         ShoppingCart shoppingCart = new ShoppingCart();
         shoppingCart.addItemQuantity(apples, 3.0);
@@ -116,8 +125,10 @@ public class TellerTest {
         ShoppingCart cart = new ShoppingCart();
         cart.addItemQuantity(apples, 2.5);
 
+        TenPercentDiscountOffer offer = new TenPercentDiscountOffer(SpecialOfferType.TenPercentDiscount, apples, 10.0);
+
         Teller teller = new Teller(catalog);
-        teller.addSpecialOffer(SpecialOfferType.TenPercentDiscount, apples, 10.0);
+        teller.addSpecialOffer(apples, offer);
 
         // ACT
         Receipt receipt = teller.checksOutArticlesFrom(cart);
@@ -149,36 +160,5 @@ public class TellerTest {
         assertEquals(0,result.getItems().size());
         assertEquals(0.0,result.getTotalPrice(), 0.01);
         assertEquals(Collections.emptyList(),result.getDiscounts());
-    }
-
-    @Test
-    public void testGetDiscountTotal() {
-        SupermarketCatalog testCatalog = new FakeCatalog();
-        Product apples = new Product("apples", ProductUnit.Kilo);
-        Offer offer = new Offer(SpecialOfferType.ThreeForTwo, apples, 2);
-
-        testCatalog.addProduct(apples, 1.50);
-
-        Teller testClass = new Teller(testCatalog);
-        testClass.addSpecialOffer(SpecialOfferType.ThreeForTwo, apples, 2.0);
-
-        double result = testClass.get3For2DiscountAmount(3.0, 1.50,  1);
-
-        assertEquals(1.5, result);
-    }
-
-    @Test
-    public void testGetPercentDiscount() {
-        SupermarketCatalog testCatalog = new FakeCatalog();
-        Product apples = new Product("apples", ProductUnit.Kilo);
-        Offer offer = new Offer(SpecialOfferType.TenPercentDiscount, apples, 10.0);
-
-        testCatalog.addProduct(apples, 1.50);
-
-        Teller testClass = new Teller(testCatalog);
-
-        assertEquals(0.15, testClass.getPercentDiscount(1, 1.50, offer));
-        assertEquals(0.30, testClass.getPercentDiscount(2, 1.50, offer));
-        assertEquals(0.0, testClass.getPercentDiscount(0, 1.50, offer));
     }
 }
